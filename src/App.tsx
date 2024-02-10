@@ -1,5 +1,6 @@
 import { useState } from "react";
 import phrases from "./phrases.json";
+import birdSong from "./birdSong.mp3";
 
 export default function Page() {
   const [noCount, setNoCount] = useState(0);
@@ -30,6 +31,51 @@ export default function Page() {
 
   const getNoButtonText = () => {
     return phrases[Math.min(noCount, phrases.length - 1)];
+  };
+
+  const handleUltraNoClick = () => {
+    const button = document.querySelector(
+      "#noButton",
+    ) as HTMLButtonElement | null;
+    const audio = new Audio(birdSong);
+
+    if (button) {
+      let xPos = 0;
+      let yPos = 0;
+      let scale = 1; // Initial scale factor
+      const duration = 31000; // 31 seconds in milliseconds
+      const steps = duration / 50; // 50ms interval as per your code
+
+      // Calculate the distance to travel in 31 seconds
+      const totalXDistance = window.innerWidth;
+
+      // Calculate the increment values for each step
+      const xIncrement = totalXDistance / steps;
+      const yIncrement = -41 * (totalXDistance / duration);
+
+      const interval = setInterval(() => {
+        xPos += xIncrement;
+        yPos += yIncrement;
+        scale += 0.008; // Increase scale factor
+
+        // Update button's style including scale transformation
+        button.style.transform = `translate(${xPos}px, ${yPos}px) rotate(${xPos / 12}deg) scale(${scale})`;
+
+        if (xPos >= totalXDistance) {
+          clearInterval(interval);
+          button.style.display = "none";
+          audio.pause();
+        }
+      }, 50);
+
+      // Listen for the "ended" event on the audio element
+      audio.addEventListener("ended", () => {
+        clearInterval(interval);
+        button.style.display = "none";
+      });
+
+      audio.play();
+    }
   };
 
   return (
@@ -65,6 +111,7 @@ export default function Page() {
           </h1>
           <div style={{ display: "block" }}>
             <button
+              id="noButton"
               className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-4`}
               style={{ fontSize: yesButtonSize }}
               onClick={() => setYesPressed(true)}
@@ -86,6 +133,14 @@ export default function Page() {
               />
             </div>
           )}
+          {/* Ultra No button */}
+          <button
+            id="ultraNo"
+            className="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+            onClick={handleUltraNoClick}
+          >
+            Ultra YES
+          </button>
         </>
       )}
     </div>
