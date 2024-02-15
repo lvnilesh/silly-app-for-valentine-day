@@ -1,5 +1,8 @@
 import { useState } from "react";
+
 import phrases from "./phrases.json";
+import birdSong from "./birdSong.mp3";
+
 
 export default function Page() {
   const [noCount, setNoCount] = useState(0);
@@ -30,6 +33,29 @@ export default function Page() {
 
   const getNoButtonText = () => {
     return phrases[Math.min(noCount, phrases.length - 1)];
+  };
+
+  const handleUltraNoClick = () => {
+    const button = document.querySelector(
+      "#noButton",
+    ) as HTMLButtonElement | null;
+    const audio = new Audio(birdSong); // Replace 'your-song-file.mp3' with your song file path
+
+    if (button) {
+      let xPos = 0;
+      let yPos = 0;
+      const interval = setInterval(() => {
+        xPos += 10;
+        yPos -= 5;
+        button.style.transform = `translate(${xPos}px, ${yPos}px) rotate(${xPos / 20}deg)`;
+        if (xPos >= window.innerWidth) {
+          clearInterval(interval);
+          button.style.display = "none";
+          audio.pause();
+        }
+      }, 50);
+      audio.play();
+    }
   };
 
   return (
@@ -65,6 +91,7 @@ export default function Page() {
           </h1>
           <div style={{ display: "block" }}>
             <button
+              id="noButton"
               className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-4`}
               style={{ fontSize: yesButtonSize }}
               onClick={() => setYesPressed(true)}
@@ -86,6 +113,14 @@ export default function Page() {
               />
             </div>
           )}
+          {/* Ultra No button */}
+          <button
+            id="ultraNo"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+            onClick={handleUltraNoClick}
+          >
+            Ultra No
+          </button>
         </>
       )}
     </div>
